@@ -3,12 +3,10 @@ package com.kakaopay.service;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.junit.Assert.*;
-
-public class LocalGovernmentServiceTest {
+public class MunicipalityServiceTest {
 
     @Autowired
-    private LocalGovernmentService service;
+    private MunicipalityService service;
 
     @Test
     public void test() {
