@@ -1,28 +1,61 @@
 package com.kakaopay.controller;
 
+import com.kakaopay.dto.response.MunicipalityInfoResponse;
 import com.kakaopay.service.MunicipalityService;
-import lombok.extern.slf4j.Slf4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@Slf4j
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class MunicipalityControllerTest {
-    @Autowired
-    private TestRestTemplate restTemplate;
+
+    private MockMvc mockMvc;
+
+    @MockBean
+    private MunicipalityController municipalityController;
+
+
+    @Before
+    public void setup() {
+        mockMvc = MockMvcBuilders.standaloneSetup(municipalityController).build();
+    }
 
     @Autowired
     private MunicipalityService municipalityService;
 
 
     @Test
-    public void getCoupon() throws Exception {
-//        ResponseEntity<MunicipalityInfoEntity> response = restTemplate.getForEntity("/v1/municipality/list", MunicipalityInfoEntity.class);
-//        log.info("getCoupon API: " + response);
+    public void uploadFile() {
+    }
+
+    @Test
+    public void getMunicipalityList() throws Exception {
+        MunicipalityInfoResponse expectedResponse = new MunicipalityInfoResponse("강원도", "강원도 소재 중소기업으로서 강원도지사가 추천한 자", "운전", "8억원 이내", "3%~12%", "강원도", "춘천지점", "강원도 소재 영업점");
+        given(this.municipalityController.getMunicipalityInfo("제주도")).willReturn(expectedResponse);
+
+        mockMvc.perform(get("/api/municipality/제주도"))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    public void getMunicipalityInfo() {
+    }
+
+    @Test
+    public void updateMunicipality() {
     }
 }

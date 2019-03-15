@@ -10,7 +10,5 @@ public class MunicipalityServiceTest {
 
     @Test
     public void test() {
-//        service
     }
-
 }

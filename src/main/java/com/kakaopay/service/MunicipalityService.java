@@ -1,5 +1,7 @@
 package com.kakaopay.service;
 
+import com.kakaopay.dto.request.MunicipalityInfoRequest;
+import com.kakaopay.dto.response.FileUploadResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
 import com.kakaopay.dto.response.StringResponse;
 import com.kakaopay.model.MunicipalityInfoEntity;
@@ -7,10 +9,20 @@ import com.kakaopay.repository.MunicipalityRepository;
 import com.kakaopay.util.Utils;
 import com.kakaopay.vo.RecommendMunicipality;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -26,15 +38,23 @@ public class MunicipalityService {
     private MunicipalityRepository municipalityRepository;
 
     // FIXME Bulk insert 고민
-    public void insertRows(List<CSVRecord> records) {
+    public FileUploadResponse insertRows(final MultipartFile file) {
         List<MunicipalityInfoEntity> recordList = new ArrayList<>();
-        for (CSVRecord record : records) {
-            recordList.add(new MunicipalityInfoEntity(record.get("지자체명(기관명)"), record.get("지원대상"), record.get("용도"), record.get("지원한도"), record.get("이차보전"), record.get("추천기관"), record.get("관리점"), record.get("취급점")));
+        String msg = "SUCCESS";
+        try {
+            CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(new InputStreamReader(file.getInputStream(), "EUC-KR"));
+            for (CSVRecord record : parser.getRecords()) {
+                recordList.add(new MunicipalityInfoEntity(record.get("지자체명(기관명)"), record.get("지원대상"), record.get("용도"), record.get("지원한도"), record.get("이차보전"), record.get("추천기관"), record.get("관리점"), record.get("취급점")));
+            }
+            municipalityRepository.saveAll(recordList);
+        } catch (IOException e) {
+            msg = e.getCause().getMessage();
         }
-        municipalityRepository.saveAll(recordList);
+        return new FileUploadResponse(file.getOriginalFilename(), file.getSize(), recordList.size(), msg);
     }
 
     public List<MunicipalityInfoResponse> getMunicipalityList() {
+        // Entity --> Reponse 변환
         List<MunicipalityInfoResponse> responses = municipalityRepository.findAll()
                 .stream()
                 .map(entity -> {
@@ -50,19 +70,12 @@ public class MunicipalityService {
         return new MunicipalityInfoResponse(entity.getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
     }
 
-    public MunicipalityInfoEntity updateMunicipalityInfo(final String region, MunicipalityInfoEntity entity) {
+    public MunicipalityInfoResponse updateMunicipalityInfo(final String region, MunicipalityInfoRequest updateRequest) {
         MunicipalityInfoEntity updatedEntity = municipalityRepository.findByRegion(region);
-
-        updatedEntity.setRegion(entity.getRegion());
-        updatedEntity.setTarget(entity.getTarget());
-        updatedEntity.setUsage(entity.getUsage());
-        updatedEntity.setLimit(entity.getLimit());
-        updatedEntity.setRate(entity.getRate());
-        updatedEntity.setMgmt(entity.getMgmt());
-        updatedEntity.setReception(entity.getReception());
+        MunicipalityInfoResponse response = new MunicipalityInfoResponse(updatedEntity.getRegion(), updatedEntity.getTarget(), updatedEntity.getUsage(), updatedEntity.getLimit(), updatedEntity.getRate(), updatedEntity.getInstitute(), updatedEntity.getMgmt(), updatedEntity.getReception());
 
         municipalityRepository.save(updatedEntity);
-        return updatedEntity;
+        return response;
     }
 
     public List<String> orderByRateDesc(final int count) {

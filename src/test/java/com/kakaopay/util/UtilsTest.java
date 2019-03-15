@@ -55,29 +55,3 @@ public class UtilsTest {
         Assert.assertEquals(30000000L, test7);
     }
 }
-
-//    @Test
-//    public void java8MapTest() {
-//        List<RecommendMunicipality> test = new ArrayList<>();
-//        test.add(new RecommendMunicipality("제주시", 300000000, 4.0));
-//        test.add(new RecommendMunicipality("강원도", 400000000, 5.0));
-//    }
-
-//        Stream<Integer> dd = test.stream().map(x -> {
-//                    int a = 2;
-//                }
-
-//           Tuple
-
-//           return new Integer(1);
-//       });
-
-//               test.stream().
-//               map(x -> {
-//           return 1;
-////            return new HashMap<String, Integer<>();
-//        });
-
-//       dd.forEach(System.out::println);
-//    }
-//}
