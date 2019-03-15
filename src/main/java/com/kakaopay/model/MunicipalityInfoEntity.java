@@ -1,19 +1,22 @@
 package com.kakaopay.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
-@Data
 @Entity
 @NoArgsConstructor
-public class MunicipalityModel {
+@Getter
+@Setter
+@Table(name = "Municipality_Info_TB")
+public class MunicipalityInfoEntity extends AbstractTimestampEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -21,26 +24,20 @@ public class MunicipalityModel {
 
     @Column(unique = true)
     private String region;
-
     private String target;
-
     private String usage;
-
-    private String _limit;
-
+    @Column(name = "lmit")
+    private String limit;
     private String rate;
-
     private String institute;
-
     private String mgmt;
-
     private String reception;
 
-    public MunicipalityModel(String region, String target, String usage, String _limit, String rate, String institute, String mgmt, String reception) {
+    public MunicipalityInfoEntity(String region, String target, String usage, String limit, String rate, String institute, String mgmt, String reception) {
         this.region = region;
         this.target = target;
         this.usage = usage;
-        this._limit = _limit;
+        this.limit = limit;
         this.rate = rate;
         this.institute = institute;
         this.mgmt = mgmt;
