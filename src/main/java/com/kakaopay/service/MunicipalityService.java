@@ -71,7 +71,8 @@ public class MunicipalityService {
     }
 
     public MunicipalityInfoResponse findByRegion(final String region) {
-        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
         if (supportEntity != null) {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
             return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
@@ -81,7 +82,8 @@ public class MunicipalityService {
     }
 
     public MunicipalityInfoResponse updateMunicipalityInfo(final String region, MunicipalityInfoRequest updateRequest) {
-        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
         if (supportEntity != null) {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
 

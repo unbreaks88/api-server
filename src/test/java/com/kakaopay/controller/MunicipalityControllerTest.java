@@ -1,5 +1,7 @@
 package com.kakaopay.controller;
 
+import com.kakaopay.dto.response.FileUploadResponse;
+import com.kakaopay.dto.response.MinRateRegionResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
 import com.kakaopay.dto.response.TopNResponse;
 import com.kakaopay.service.MunicipalityService;
@@ -69,6 +71,7 @@ public class MunicipalityControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().size()).isEqualTo(98);
     }
+
 //    @Test
 //    public void updateMunicipality() {
 //        MunicipalityInfoRequest modifyRequest = new MunicipalityInfoRequest("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "3%", "강릉시", "강릉지점", "강릉시 소재 영업점");
@@ -89,31 +92,25 @@ public class MunicipalityControllerTest {
 //        assertThat(region.getStatusCode()).isEqualTo(HttpStatus.OK);
 //    }
 
-    @Test
-    public void orderByRateDesc() {
-        ResponseEntity<TopNResponse> region = testRestTemplate.exchange(
-                "/api/municipality/5",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<TopNResponse>() {
-                });
-
-        assertThat(region).isNotNull();
-        assertThat(region.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(region.getBody().getRegionList().size()).isEqualTo(5);
-    }
-
 //    @Test
-//    public void recommendMunicipality() {
-//        ResponseEntity<MinRateRegionResponse> region = testRestTemplate.exchange(
-//                "/api/municipality/recommend",
+//    public void orderByRateDesc() {
+//        ResponseEntity<TopNResponse> region = testRestTemplate.exchange(
+//                "/api/municipality?sort=5",
 //                HttpMethod.GET,
 //                null,
-//                new ParameterizedTypeReference<MinRateRegionResponse>() {
+//                new ParameterizedTypeReference<TopNResponse>() {
 //                });
 //
 //        assertThat(region).isNotNull();
 //        assertThat(region.getStatusCode()).isEqualTo(HttpStatus.OK);
-////        assertThat(region.getBody().size()).isEqualTo(5);
+//        assertThat(region.getBody().getRegionList().size()).isEqualTo(5);
 //    }
+
+    @Test
+    public void recommendMunicipality() {
+        ResponseEntity<MinRateRegionResponse> response = testRestTemplate.getForEntity("/api/municipality/recommend", MinRateRegionResponse.class);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getRegion()).isEqualTo("금천구");
+    }
 }
