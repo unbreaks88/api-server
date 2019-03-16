@@ -16,7 +16,8 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Table(name = "Municipality_Info_TB")
-public class MunicipalityInfoEntity extends AbstractTimestampEntity {
+//public class MunicipalityInfoEntity extends AbstractTimestampEntity {
+public class MunicipalityInfoEntity  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

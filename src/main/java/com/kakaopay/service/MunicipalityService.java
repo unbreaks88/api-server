@@ -12,16 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -71,11 +66,17 @@ public class MunicipalityService {
     }
 
     public MunicipalityInfoResponse updateMunicipalityInfo(final String region, MunicipalityInfoRequest updateRequest) {
-        MunicipalityInfoEntity updatedEntity = municipalityRepository.findByRegion(region);
-        MunicipalityInfoResponse response = new MunicipalityInfoResponse(updatedEntity.getRegion(), updatedEntity.getTarget(), updatedEntity.getUsage(), updatedEntity.getLimit(), updatedEntity.getRate(), updatedEntity.getInstitute(), updatedEntity.getMgmt(), updatedEntity.getReception());
+        MunicipalityInfoEntity entity = municipalityRepository.findByRegion(region);
+        entity.setRegion(updateRequest.getRegion());
+        entity.setTarget(updateRequest.getTarget());
+        entity.setUsage(updateRequest.getUsage());
+        entity.setLimit(updateRequest.getLimit());
+        entity.setRate(updateRequest.getRate());
+        entity.setMgmt(updateRequest.getMgmt());
+        entity.setReception(updateRequest.getReception());
 
-        municipalityRepository.save(updatedEntity);
-        return response;
+        municipalityRepository.save(entity);
+        return new MunicipalityInfoResponse(entity.getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
     }
 
     public List<String> orderByRateDesc(final int count) {
@@ -103,19 +104,18 @@ public class MunicipalityService {
 
     public StringResponse getMinRateRegion() {
         Map<String, Double> regionMinRateMap = new LinkedHashMap<>();
-        List<MunicipalityInfoEntity> entityList = municipalityRepository.findAll();
 
         /*
          * 정렬을 위한 데이터 셋팅
          * key : 지자체명(기관명)
-         * value : 이차보전
+         * response : 이차보전
          */
         for (MunicipalityInfoEntity entity : municipalityRepository.findAll()) {
             double minRate = Utils.convertRateStringToDouble(entity.getRate())[0];
             regionMinRateMap.put(entity.getRegion(), minRate);
         }
 
-        // 이차보전 비율 기준 정렬
+        // 이차보전 기준 정렬
         String region = regionMinRateMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
                 .findFirst().get().getKey();

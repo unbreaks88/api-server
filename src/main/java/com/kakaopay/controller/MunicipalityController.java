@@ -6,9 +6,6 @@ import com.kakaopay.dto.response.MunicipalityInfoResponse;
 import com.kakaopay.dto.response.StringResponse;
 import com.kakaopay.service.MunicipalityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +24,11 @@ public class MunicipalityController {
 
     @Autowired
     MunicipalityService municipalityService;
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "hello";
+    }
 
     // 1. 데이터 파일에서 각 레코드를 데이터베이스에 저장하는 API
     @PostMapping("/municipality/upload")

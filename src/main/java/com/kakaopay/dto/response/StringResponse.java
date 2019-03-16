@@ -10,5 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StringResponse {
-    private String value;
+    private String response;
 }
