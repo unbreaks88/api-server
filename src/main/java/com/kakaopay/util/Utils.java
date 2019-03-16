@@ -48,7 +48,7 @@ public class Utils {
     public static long convertCurrencyHangulToLong(final String hangulKoreanWon) {
         // FIXME
         if (hangulKoreanWon.startsWith("추천금액")) {
-            return 1;
+            return Long.MIN_VALUE;
         }
         int number = 0;
         int unit = 0;

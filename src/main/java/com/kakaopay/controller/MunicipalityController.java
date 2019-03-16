@@ -2,8 +2,9 @@ package com.kakaopay.controller;
 
 import com.kakaopay.dto.request.MunicipalityInfoRequest;
 import com.kakaopay.dto.response.FileUploadResponse;
+import com.kakaopay.dto.response.MinRateRegionResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
-import com.kakaopay.dto.response.StringResponse;
+import com.kakaopay.dto.response.TopNResponse;
 import com.kakaopay.service.MunicipalityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +25,6 @@ public class MunicipalityController {
 
     @Autowired
     MunicipalityService municipalityService;
-
-    @GetMapping("/hello")
-    public String hello() {
-        return "hello";
-    }
 
     // 1. 데이터 파일에서 각 레코드를 데이터베이스에 저장하는 API
     @PostMapping("/municipality/upload")
@@ -58,19 +54,19 @@ public class MunicipalityController {
     // - 입력: 출력 개수 K
     // - 출력: K 개의 지자체명 (e.g. { 강릉시, 강원도, 거제시, 경기도, 경상남도 } )
     @GetMapping("/municipality/sort")
-    public List<String> orderByRateDesc(@RequestParam final int count) {
+    public TopNResponse orderByRateDesc(@RequestParam final int count) {
         return municipalityService.orderByRateDesc(count);
     }
 
     // 6. 이차보전 컬럼에서 보전 비율이 가장 작은 추천 기관명을 출력하는 API
     @GetMapping("/municipality/recommend")
-    public StringResponse recommendMunicipality() {
+    public MinRateRegionResponse recommendMunicipality() {
         return municipalityService.getMinRateRegion();
     }
 
     // TODO 선택 문제
     @PostMapping("/municipality/recommend")
-    public StringResponse recommendMunicipalityInfo() {
-        return new StringResponse();
+    public MinRateRegionResponse recommendMunicipalityInfo() {
+        return new MinRateRegionResponse();
     }
 }

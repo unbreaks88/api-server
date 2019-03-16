@@ -2,10 +2,13 @@ package com.kakaopay.service;
 
 import com.kakaopay.dto.request.MunicipalityInfoRequest;
 import com.kakaopay.dto.response.FileUploadResponse;
+import com.kakaopay.dto.response.MinRateRegionResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
-import com.kakaopay.dto.response.StringResponse;
+import com.kakaopay.dto.response.TopNResponse;
 import com.kakaopay.model.MunicipalityInfoEntity;
+import com.kakaopay.model.SupportMunicipalityInfoEntity;
 import com.kakaopay.repository.MunicipalityRepository;
+import com.kakaopay.repository.SupportMunicipalityRepository;
 import com.kakaopay.util.Utils;
 import com.kakaopay.vo.RecommendMunicipality;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +35,21 @@ public class MunicipalityService {
     @Autowired
     private MunicipalityRepository municipalityRepository;
 
+    @Autowired
+    private SupportMunicipalityRepository supportMunicipalityRepository;
+
     // FIXME Bulk insert 고민
     public FileUploadResponse insertRows(final MultipartFile file) {
         List<MunicipalityInfoEntity> recordList = new ArrayList<>();
         String msg = "SUCCESS";
         try {
             CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(new InputStreamReader(file.getInputStream(), "EUC-KR"));
+            int i = 0;
             for (CSVRecord record : parser.getRecords()) {
-                recordList.add(new MunicipalityInfoEntity(record.get("지자체명(기관명)"), record.get("지원대상"), record.get("용도"), record.get("지원한도"), record.get("이차보전"), record.get("추천기관"), record.get("관리점"), record.get("취급점")));
+                StringBuilder locationCode = new StringBuilder("LC");
+                locationCode.append(String.valueOf(i++));
+                SupportMunicipalityInfoEntity supportInfoEntity = new SupportMunicipalityInfoEntity(locationCode.toString(), record.get("지자체명(기관명)"));
+                recordList.add(new MunicipalityInfoEntity(supportInfoEntity, record.get("지원대상"), record.get("용도"), record.get("지원한도"), record.get("이차보전"), record.get("추천기관"), record.get("관리점"), record.get("취급점")));
             }
             municipalityRepository.saveAll(recordList);
         } catch (IOException e) {
@@ -54,32 +64,43 @@ public class MunicipalityService {
                 .stream()
                 .map(entity -> {
                     return new MunicipalityInfoResponse(
-                            entity.getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception()
+                            entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception()
                     );
                 }).collect(Collectors.toList());
         return responses;
     }
 
     public MunicipalityInfoResponse findByRegion(final String region) {
-        MunicipalityInfoEntity entity = municipalityRepository.findByRegion(region);
-        return new MunicipalityInfoResponse(entity.getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
+        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+        if (supportEntity != null) {
+            MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
+            return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
+        }
+        // FIXME
+        return null;
     }
 
     public MunicipalityInfoResponse updateMunicipalityInfo(final String region, MunicipalityInfoRequest updateRequest) {
-        MunicipalityInfoEntity entity = municipalityRepository.findByRegion(region);
-        entity.setRegion(updateRequest.getRegion());
-        entity.setTarget(updateRequest.getTarget());
-        entity.setUsage(updateRequest.getUsage());
-        entity.setLimit(updateRequest.getLimit());
-        entity.setRate(updateRequest.getRate());
-        entity.setMgmt(updateRequest.getMgmt());
-        entity.setReception(updateRequest.getReception());
+        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+        if (supportEntity != null) {
+            MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
 
-        municipalityRepository.save(entity);
-        return new MunicipalityInfoResponse(entity.getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
+            entity.getSupportInfoEntity().setRegion(updateRequest.getRegion());
+            entity.setTarget(updateRequest.getTarget());
+            entity.setUsage(updateRequest.getUsage());
+            entity.setLimit(updateRequest.getLimit());
+            entity.setRate(updateRequest.getRate());
+            entity.setMgmt(updateRequest.getMgmt());
+            entity.setReception(updateRequest.getReception());
+
+            municipalityRepository.save(entity);
+            return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
+        }
+        // FIXME
+        return null;
     }
 
-    public List<String> orderByRateDesc(final int count) {
+    public TopNResponse orderByRateDesc(final int count) {
         final List<MunicipalityInfoEntity> entityList = municipalityRepository.findAll();
 
         /**
@@ -92,27 +113,27 @@ public class MunicipalityService {
             String hangulWon = entity.getLimit().split(" ")[0];
             long supportAmount = Utils.convertCurrencyHangulToLong(hangulWon.trim());
             double averageRate = Utils.getAverageRate(Utils.convertRateStringToDouble(entity.getRate()));
-            return new RecommendMunicipality(entity.getRegion(), supportAmount, averageRate);
-        }).sorted(Comparator.comparing(RecommendMunicipality::getSupportAmount)
+            return new RecommendMunicipality(entity.getSupportInfoEntity().getRegion(), supportAmount, averageRate);
+        }).sorted(Comparator.comparing(RecommendMunicipality::getSupportAmount).reversed()
                 .thenComparing(RecommendMunicipality::getAverageRate))
                 .map(entity -> entity.getRegionName())
                 .limit(count)
                 .collect(Collectors.toList());
 
-        return sortedRegionList;
+        return new TopNResponse(sortedRegionList);
     }
 
-    public StringResponse getMinRateRegion() {
+    public MinRateRegionResponse getMinRateRegion() {
         Map<String, Double> regionMinRateMap = new LinkedHashMap<>();
 
         /*
          * 정렬을 위한 데이터 셋팅
          * key : 지자체명(기관명)
-         * response : 이차보전
+         * region : 이차보전
          */
         for (MunicipalityInfoEntity entity : municipalityRepository.findAll()) {
             double minRate = Utils.convertRateStringToDouble(entity.getRate())[0];
-            regionMinRateMap.put(entity.getRegion(), minRate);
+            regionMinRateMap.put(entity.getSupportInfoEntity().getRegion(), minRate);
         }
 
         // 이차보전 기준 정렬
@@ -120,6 +141,6 @@ public class MunicipalityService {
                 .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
                 .findFirst().get().getKey();
 
-        return new StringResponse(region);
+        return new MinRateRegionResponse(region);
     }
 }

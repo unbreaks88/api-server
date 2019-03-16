@@ -1,8 +1,7 @@
 package com.kakaopay.controller;
 
-import com.kakaopay.dto.request.MunicipalityInfoRequest;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
-import com.kakaopay.dto.response.StringResponse;
+import com.kakaopay.dto.response.TopNResponse;
 import com.kakaopay.service.MunicipalityService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
@@ -12,11 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -52,13 +48,12 @@ public class MunicipalityControllerTest {
         initilize = true;
     }
 
-
     @Test
     public void getMunicipalityInfoTest() {
         ResponseEntity<MunicipalityInfoResponse> response = testRestTemplate.getForEntity("/api/municipality/강릉시", MunicipalityInfoResponse.class);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//        assertThat(response.getBody().get
+//        assertThat(region.getBody().get
     }
 
     @Test
@@ -74,7 +69,6 @@ public class MunicipalityControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().size()).isEqualTo(98);
     }
-
 //    @Test
 //    public void updateMunicipality() {
 //        MunicipalityInfoRequest modifyRequest = new MunicipalityInfoRequest("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "3%", "강릉시", "강릉지점", "강릉시 소재 영업점");
@@ -84,43 +78,42 @@ public class MunicipalityControllerTest {
 ////        headers.setContentType();
 //
 //        HttpEntity<MunicipalityInfoRequest> testRequest = new HttpEntity(modifyRequest, headers);
-//        ResponseEntity<MunicipalityInfoResponse> response = testRestTemplate.exchange(
+//        ResponseEntity<MunicipalityInfoResponse> region = testRestTemplate.exchange(
 //                "/api/municipality/제주시",
 //                HttpMethod.PUT,
 //                testRequest,
 //                new ParameterizedTypeReference<MunicipalityInfoResponse>(){});
 //
-////        ResponseEntity<MunicipalityInfoResponse> response = testRestTemplate.put("/api/municipality/제주시", modifyRequest, MunicipalityInfoResponse.class);
-//        assertThat(response).isNotNull();
-//        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+////        ResponseEntity<MunicipalityInfoResponse> region = testRestTemplate.put("/api/municipality/제주시", modifyRequest, MunicipalityInfoResponse.class);
+//        assertThat(region).isNotNull();
+//        assertThat(region.getStatusCode()).isEqualTo(HttpStatus.OK);
 //    }
 
     @Test
     public void orderByRateDesc() {
-        ResponseEntity<List<String>> response = testRestTemplate.exchange(
+        ResponseEntity<TopNResponse> region = testRestTemplate.exchange(
                 "/api/municipality/5",
                 HttpMethod.GET,
                 null,
-                new ParameterizedTypeReference<List<String>>() {
+                new ParameterizedTypeReference<TopNResponse>() {
                 });
 
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody().size()).isEqualTo(5);
-
+        assertThat(region).isNotNull();
+        assertThat(region.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(region.getBody().getRegionList().size()).isEqualTo(5);
     }
 
-    @Test
-    public void recommendMunicipality() {
-        ResponseEntity<StringResponse> response = testRestTemplate.exchange(
-                "/api/municipality/recommend",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<StringResponse>() {
-                });
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//        assertThat(response.getBody().size()).isEqualTo(5);
-    }
+//    @Test
+//    public void recommendMunicipality() {
+//        ResponseEntity<MinRateRegionResponse> region = testRestTemplate.exchange(
+//                "/api/municipality/recommend",
+//                HttpMethod.GET,
+//                null,
+//                new ParameterizedTypeReference<MinRateRegionResponse>() {
+//                });
+//
+//        assertThat(region).isNotNull();
+//        assertThat(region.getStatusCode()).isEqualTo(HttpStatus.OK);
+////        assertThat(region.getBody().size()).isEqualTo(5);
+//    }
 }
