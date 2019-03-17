@@ -80,7 +80,8 @@ public class MunicipalityService {
         return null;
     }
 
-    public MunicipalityInfoResponse updateMunicipalityInfo(final String region, MunicipalityInfoRequest updateRequest) {
+    public MunicipalityInfoResponse updateMunicipalityInfo(MunicipalityInfoRequest updateRequest) {
+        String region = updateRequest.getRegion();
         SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
         if (supportEntity != null) {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
@@ -106,7 +107,7 @@ public class MunicipalityService {
         /**
          * 1. 전체 entity에서 필요 정보만 추출(지자체명(기관명), 지원한도, 이차보전)
          * 2. 1차 정렬(지원한도, 내림차순)
-         * 3. 2차 정렬(이차보전, 내림차순)
+         * 3. 2차 정렬(이차보전, 오름차순)
          * 4. topN개 추출
          */
         final String sortedRegionList = entityList.stream().map(entity -> {
@@ -129,7 +130,7 @@ public class MunicipalityService {
         /*
          * 정렬을 위한 데이터 셋팅
          * key : 지자체명(기관명)
-         * region : 이차보전
+         * value : Pair(추천기관, 이차보전)
          */
         for (MunicipalityInfoEntity entity : municipalityRepository.findAll()) {
             String institute = entity.getInstitute();

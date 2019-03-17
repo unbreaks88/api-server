@@ -90,7 +90,7 @@ public class MunicipalityServiceTest {
         assertThat(originResponse.getReception()).isEqualTo(originExpectedResponse.getReception());
 
         MunicipalityInfoRequest updateRequest = new MunicipalityInfoRequest("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내", "5.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점");
-        MunicipalityInfoResponse updatedResponse = municipalityService.updateMunicipalityInfo("경주시", updateRequest);
+        MunicipalityInfoResponse updatedResponse = municipalityService.updateMunicipalityInfo(updateRequest);
         MunicipalityInfoResponse updatedExpectedResponse = new MunicipalityInfoResponse("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내", "5.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점");
 
         assertThat(updatedResponse).isNotNull();

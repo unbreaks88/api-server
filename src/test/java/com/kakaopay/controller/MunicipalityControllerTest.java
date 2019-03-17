@@ -111,7 +111,7 @@ public class MunicipalityControllerTest {
 
         HttpEntity<MunicipalityInfoRequest> modifyEntity = new HttpEntity(modifyRequest, headers);
         ResponseEntity<MunicipalityInfoResponse> modifiedResponse = testRestTemplate.exchange(
-                "/api/municipality/강릉시",
+                "/api/municipality",
                 HttpMethod.PUT,
                 modifyEntity,
                 new ParameterizedTypeReference<MunicipalityInfoResponse>() {

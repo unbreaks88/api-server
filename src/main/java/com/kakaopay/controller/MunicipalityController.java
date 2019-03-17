@@ -44,9 +44,9 @@ public class MunicipalityController {
     }
 
     // 4. 지원하는 지자체 정보 수정 기능 API
-    @PutMapping("/municipality/{region}")
-    public MunicipalityInfoResponse updateMunicipality(@PathVariable String region, @RequestBody MunicipalityInfoRequest municipalityInfoUpdateRequest) {
-        return municipalityService.updateMunicipalityInfo(region, municipalityInfoUpdateRequest);
+    @PutMapping("/municipality")
+    public MunicipalityInfoResponse updateMunicipality(@RequestBody MunicipalityInfoRequest municipalityInfoUpdateRequest) {
+        return municipalityService.updateMunicipalityInfo(municipalityInfoUpdateRequest);
     }
 
     // 5. 지원한도 컬럼에서 지원금액으로 내림차순 정렬(지원금액이 동일하면 이차보전 평균 비율이 적은 순서)하여 특정 개수만 출력하는 API
