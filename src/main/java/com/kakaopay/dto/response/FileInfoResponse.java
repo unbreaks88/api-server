@@ -7,8 +7,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class RestResponse<T> {
-    private String message;
+@AllArgsConstructor
+public class FileInfoResponse {
+    private String name;
+    private long size;
+    private int rows;
+    private String msg;
 }

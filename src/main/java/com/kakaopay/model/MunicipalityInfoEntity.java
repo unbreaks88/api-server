@@ -10,7 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -26,7 +25,6 @@ public class MunicipalityInfoEntity extends AbstractTimestampEntity {
     private Long id;
 
     @OneToOne(cascade = {CascadeType.ALL})
-//    @JoinColumn(name = "regionCode", referencedColumnName = "code")
     private SupportMunicipalityInfoEntity supportInfoEntity;
     private String target;
     private String usage;

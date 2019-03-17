@@ -1,17 +1,19 @@
 package com.kakaopay.service;
 
 import com.kakaopay.dto.request.MunicipalityInfoRequest;
-import com.kakaopay.dto.response.MinRateRegionResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
-import com.kakaopay.dto.response.TopNResponse;
+import com.kakaopay.dto.response.RegionInfoResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
+import java.io.FileInputStream;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,22 +28,25 @@ public class MunicipalityServiceTest {
 
     private static boolean initilize = false;
 
-//    @Before
-//    public void setUp() throws Exception {
-//        if (!initilize) {
-//            String filePath = "src/test/resources/test_data.csv";
-//            FileInputStream fileInputStream = new FileInputStream(filePath);
-//            MultipartFile multipartFile = new MockMultipartFile("test_data.csv", fileInputStream);
-//            municipalityService.insertRows(multipartFile);
-//        }
-//        initilize = true;
-//    }
+    @Before
+    public void setUp() throws Exception {
+        if (!initilize) {
+            String filePath = "src/test/resources/test_data.csv";
+            FileInputStream fileInputStream = new FileInputStream(filePath);
+            MultipartFile multipartFile = new MockMultipartFile("test_data.csv", fileInputStream);
+            municipalityService.insertRows(multipartFile);
+        }
+        initilize = true;
+    }
 
     @Test
     public void getMunicipalityListTest() {
-        List<MunicipalityInfoResponse> response = municipalityService.getMunicipalityList();
-        assertThat(response).isNotNull();
-        assertThat(response.size()).isEqualTo(98);
+        List<MunicipalityInfoResponse> responses = municipalityService.getMunicipalityList();
+        assertThat(responses).isNotNull();
+        assertThat(responses.size()).isEqualTo(98);
+        for (MunicipalityInfoResponse response : responses) {
+            assertThat(response).isNotNull();
+        }
     }
 
     @Test
@@ -95,32 +100,15 @@ public class MunicipalityServiceTest {
 
     @Test
     public void orderByRateDescTest() {
-        TopNResponse response = municipalityService.orderByRateDesc(5);
-        List<String> expectedResult = Arrays.asList("경기도", "제주도", "국토교통부", "인천광역시", "안양시");
+        RegionInfoResponse response = municipalityService.orderByRateDesc(5);
         assertThat(response).isNotNull();
-        assertThat(response.getRegionList().size()).isEqualTo(5);
-        for (int i = 0; i < response.getRegionList().size(); i++) {
-            assertThat(response.getRegionList().get(i)).isEqualTo(expectedResult.get(i));
-        }
+        assertThat(response.getRegion()).isEqualTo("경기도, 제주도, 국토교통부, 인천광역시, 안양시");
     }
 
     @Test
     public void getMinRateRegionTest() {
-        MinRateRegionResponse response = municipalityService.getMinRateRegion();
+        RegionInfoResponse response = municipalityService.getMinRateRegion();
         assertThat(response).isNotNull();
         assertThat(response.getRegion()).isEqualTo("금천구");
     }
 }
-
-//    @Before
-//    public void setUp() {
-//        savedEntities.add(new MunicipalityInfoEntity("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "3%", "강릉시", "강릉지점", "강릉시 소재 영업점"));
-//        savedEntities.add(new MunicipalityInfoEntity("경기도", "경기도 소재 중소기업으로서 경기도지사가 추천한 자", "운전 및 시", "300억원 이내", "0.3%~2.0%", "경기신용보증재단", "경수지역본부", "전 영업점"));
-//        savedEntities.add(new MunicipalityInfoEntity("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내내", "3.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점"));
-//        savedEntities.add(new MunicipalityInfoEntity("김포시", "김포시 소재 중소기업(소상공인 포함)으로서 김포시장이 추천한 자", "운전", "2억원 이내", "1.50%~2.0%", "김포시", "김포지점", "김포시 관내 영업점"));
-//        savedEntities.add(new MunicipalityInfoEntity("김해시", "김해시 소재 중소기업(소상공인 포함)으로서 김해시장이 추천한 자", "운전 및 시설", "3억원 이내", "2.0%~2.5%", "김해시, 경남신용보증재단 김해지점", "김해지점", "전 영업점"));
-//        savedEntities.add(new MunicipalityInfoEntity("금천구", "금천구 소재 중소기업으로서 금천구청장이 추천한 자", "운전", "2억원 이내", "2.0%~2.5%", "금천구", "가산디지털지점", "전 영업점"));
-//
-//        municipalityRepository.saveAll(savedEntities);
-//        assertThat(municipalityRepository.findAll(), is(savedEntities));
-//    }

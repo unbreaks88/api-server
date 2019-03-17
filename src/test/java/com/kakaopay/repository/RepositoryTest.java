@@ -43,25 +43,25 @@ public class RepositoryTest {
 
     @Test
     public void findByRegion() {
-        SupportMunicipalityInfoEntity sExpected1 = supportMunicipalityRepository.findByRegion("강릉시");
+        SupportMunicipalityInfoEntity sExpected1 = supportMunicipalityRepository.findByRegion("강릉시").orElse(null);
         MunicipalityInfoEntity expected1 = municipalityRepository.findBySupportInfoEntity(sExpected1);
 
-        SupportMunicipalityInfoEntity sExpected2 = supportMunicipalityRepository.findByRegion("경기도");
+        SupportMunicipalityInfoEntity sExpected2 = supportMunicipalityRepository.findByRegion("경기도").orElse(null);
         MunicipalityInfoEntity expected2 = municipalityRepository.findBySupportInfoEntity(sExpected2);
 
-        SupportMunicipalityInfoEntity sExpected3 = supportMunicipalityRepository.findByRegion("경주시");
+        SupportMunicipalityInfoEntity sExpected3 = supportMunicipalityRepository.findByRegion("경주시").orElse(null);
         MunicipalityInfoEntity expected3 = municipalityRepository.findBySupportInfoEntity(sExpected3);
 
-        SupportMunicipalityInfoEntity sExpected4 = supportMunicipalityRepository.findByRegion("김포시");
+        SupportMunicipalityInfoEntity sExpected4 = supportMunicipalityRepository.findByRegion("김포시").orElse(null);
         MunicipalityInfoEntity expected4 = municipalityRepository.findBySupportInfoEntity(sExpected4);
 
-        SupportMunicipalityInfoEntity sExpected5 = supportMunicipalityRepository.findByRegion("김해시");
+        SupportMunicipalityInfoEntity sExpected5 = supportMunicipalityRepository.findByRegion("김해시").orElse(null);
         MunicipalityInfoEntity expected5 = municipalityRepository.findBySupportInfoEntity(sExpected5);
 
-        SupportMunicipalityInfoEntity sExpected6 = supportMunicipalityRepository.findByRegion("금천구");
+        SupportMunicipalityInfoEntity sExpected6 = supportMunicipalityRepository.findByRegion("금천구").orElse(null);
         MunicipalityInfoEntity expected6 = municipalityRepository.findBySupportInfoEntity(sExpected6);
 
-        SupportMunicipalityInfoEntity sExpected7 = supportMunicipalityRepository.findByRegion("제주시");
+        SupportMunicipalityInfoEntity sExpected7 = supportMunicipalityRepository.findByRegion("제주시").orElse(null);
         MunicipalityInfoEntity expected7 = municipalityRepository.findBySupportInfoEntity(sExpected7);
 
         assertThat(sExpected1, is(notNullValue()));
@@ -81,4 +81,3 @@ public class RepositoryTest {
         assertThat(expected7, is(nullValue()));
     }
 }
-

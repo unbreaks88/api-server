@@ -5,13 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopNResponse {
-    private List<String> regionList;
+public class RegionInfoResponse {
+    private String region;
 }

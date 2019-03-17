@@ -18,7 +18,6 @@ import javax.persistence.Table;
 @Table(name = "SUPPORT_TB")
 // 지원 지자체(기관) : { 지자체명, 지자체 코드 }
 public class SupportMunicipalityInfoEntity {
-
     @Id
     private String code;
     private String region;

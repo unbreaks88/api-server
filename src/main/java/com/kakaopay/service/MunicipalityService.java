@@ -1,10 +1,9 @@
 package com.kakaopay.service;
 
 import com.kakaopay.dto.request.MunicipalityInfoRequest;
-import com.kakaopay.dto.response.FileUploadResponse;
-import com.kakaopay.dto.response.MinRateRegionResponse;
+import com.kakaopay.dto.response.FileInfoResponse;
+import com.kakaopay.dto.response.RegionInfoResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
-import com.kakaopay.dto.response.TopNResponse;
 import com.kakaopay.model.MunicipalityInfoEntity;
 import com.kakaopay.model.SupportMunicipalityInfoEntity;
 import com.kakaopay.repository.MunicipalityRepository;
@@ -39,7 +38,7 @@ public class MunicipalityService {
     private SupportMunicipalityRepository supportMunicipalityRepository;
 
     // FIXME Bulk insert 고민
-    public FileUploadResponse insertRows(final MultipartFile file) {
+    public FileInfoResponse insertRows(final MultipartFile file) {
         List<MunicipalityInfoEntity> recordList = new ArrayList<>();
         String msg = "SUCCESS";
         try {
@@ -55,7 +54,7 @@ public class MunicipalityService {
         } catch (IOException e) {
             msg = e.getCause().getMessage();
         }
-        return new FileUploadResponse(file.getOriginalFilename(), file.getSize(), recordList.size(), msg);
+        return new FileInfoResponse(file.getOriginalFilename(), file.getSize(), recordList.size(), msg);
     }
 
     public List<MunicipalityInfoResponse> getMunicipalityList() {
@@ -71,8 +70,8 @@ public class MunicipalityService {
     }
 
     public MunicipalityInfoResponse findByRegion(final String region) {
-//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
-        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
+        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
         if (supportEntity != null) {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
             return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
@@ -82,8 +81,8 @@ public class MunicipalityService {
     }
 
     public MunicipalityInfoResponse updateMunicipalityInfo(final String region, MunicipalityInfoRequest updateRequest) {
-//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
-        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
+        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
+//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
         if (supportEntity != null) {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
 
@@ -102,7 +101,7 @@ public class MunicipalityService {
         return null;
     }
 
-    public TopNResponse orderByRateDesc(final int count) {
+    public RegionInfoResponse orderByRateDesc(final int count) {
         final List<MunicipalityInfoEntity> entityList = municipalityRepository.findAll();
 
         /**
@@ -111,7 +110,7 @@ public class MunicipalityService {
          * 3. 2차 정렬(이차보전, 내림차순)
          * 4. topN개 추출
          */
-        final List<String> sortedRegionList = entityList.stream().map(entity -> {
+        final String sortedRegionList = entityList.stream().map(entity -> {
             String hangulWon = entity.getLimit().split(" ")[0];
             long supportAmount = Utils.convertCurrencyHangulToLong(hangulWon.trim());
             double averageRate = Utils.getAverageRate(Utils.convertRateStringToDouble(entity.getRate()));
@@ -120,12 +119,12 @@ public class MunicipalityService {
                 .thenComparing(RecommendMunicipality::getAverageRate))
                 .map(entity -> entity.getRegionName())
                 .limit(count)
-                .collect(Collectors.toList());
+                .collect(Collectors.joining(", "));
 
-        return new TopNResponse(sortedRegionList);
+        return new RegionInfoResponse(sortedRegionList);
     }
 
-    public MinRateRegionResponse getMinRateRegion() {
+    public RegionInfoResponse getMinRateRegion() {
         Map<String, Double> regionMinRateMap = new LinkedHashMap<>();
 
         /*
@@ -143,6 +142,6 @@ public class MunicipalityService {
                 .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
                 .findFirst().get().getKey();
 
-        return new MinRateRegionResponse(region);
+        return new RegionInfoResponse(region);
     }
 }

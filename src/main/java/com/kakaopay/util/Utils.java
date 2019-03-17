@@ -63,18 +63,6 @@ public class Utils {
         return (long) number * unit;
     }
 
-
-
-// TODO
-//    public static double getMinRate() {
-//        return 0.0;
-//    }
-//
-//    public static double getMaxRate() {
-//        return 0.0;
-//    }
-//
-//
 //    private static boolean isKoreanWon(String hangulKoreanWon) {
 //        for (String key : hangulToLongCurrencyMap.keySet()) {
 //        }

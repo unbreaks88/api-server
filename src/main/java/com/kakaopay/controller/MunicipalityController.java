@@ -1,10 +1,9 @@
 package com.kakaopay.controller;
 
 import com.kakaopay.dto.request.MunicipalityInfoRequest;
-import com.kakaopay.dto.response.FileUploadResponse;
-import com.kakaopay.dto.response.MinRateRegionResponse;
+import com.kakaopay.dto.response.FileInfoResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
-import com.kakaopay.dto.response.TopNResponse;
+import com.kakaopay.dto.response.RegionInfoResponse;
 import com.kakaopay.service.MunicipalityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +27,7 @@ public class MunicipalityController {
 
     // 1. 데이터 파일에서 각 레코드를 데이터베이스에 저장하는 API
     @PostMapping("/municipality/upload")
-    public FileUploadResponse uploadFile(@RequestParam MultipartFile file) {
+    public FileInfoResponse uploadFile(@RequestParam MultipartFile file) {
         return municipalityService.insertRows(file);
     }
 
@@ -53,20 +52,20 @@ public class MunicipalityController {
     // 5. 지원한도 컬럼에서 지원금액으로 내림차순 정렬(지원금액이 동일하면 이차보전 평균 비율이 적은 순서)하여 특정 개수만 출력하는 API
     // - 입력: 출력 개수 K
     // - 출력: K 개의 지자체명 (e.g. { 강릉시, 강원도, 거제시, 경기도, 경상남도 } )
-    @GetMapping("/municipality/sort")
-    public TopNResponse orderByRateDesc(@RequestParam final int count) {
+    @GetMapping("/municipality/sort/{count}")
+    public RegionInfoResponse orderByRateDesc(@PathVariable final int count) {
         return municipalityService.orderByRateDesc(count);
     }
 
     // 6. 이차보전 컬럼에서 보전 비율이 가장 작은 추천 기관명을 출력하는 API
     @GetMapping("/municipality/recommend")
-    public MinRateRegionResponse recommendMunicipality() {
+    public RegionInfoResponse recommendMunicipality() {
         return municipalityService.getMinRateRegion();
     }
 
     // TODO 선택 문제
     @PostMapping("/municipality/recommend")
-    public MinRateRegionResponse recommendMunicipalityInfo() {
-        return new MinRateRegionResponse();
+    public RegionInfoResponse recommendMunicipalityInfo() {
+        return new RegionInfoResponse();
     }
 }
