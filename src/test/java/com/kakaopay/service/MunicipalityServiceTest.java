@@ -3,7 +3,10 @@ package com.kakaopay.service;
 import com.kakaopay.dto.request.MunicipalityInfoRequest;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
 import com.kakaopay.dto.response.RegionInfoResponse;
+import com.kakaopay.repository.MunicipalityRepository;
+import com.kakaopay.repository.SupportMunicipalityRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,17 +29,20 @@ public class MunicipalityServiceTest {
     @Autowired
     private MunicipalityService municipalityService;
 
-    private static boolean initilize = false;
+    @Autowired
+    private MunicipalityRepository municipalityRepository;
 
     @Before
     public void setUp() throws Exception {
-        if (!initilize) {
-            String filePath = "src/test/resources/test_data.csv";
-            FileInputStream fileInputStream = new FileInputStream(filePath);
-            MultipartFile multipartFile = new MockMultipartFile("test_data.csv", fileInputStream);
-            municipalityService.insertRows(multipartFile);
-        }
-        initilize = true;
+        String filePath = "src/test/resources/test_data.csv";
+        FileInputStream fileInputStream = new FileInputStream(filePath);
+        MultipartFile multipartFile = new MockMultipartFile("test_data.csv", fileInputStream);
+        municipalityService.insertRows(multipartFile);
+    }
+
+    @After
+    public void clean() {
+        municipalityRepository.deleteAll();
     }
 
     @Test

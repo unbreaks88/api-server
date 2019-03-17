@@ -1,10 +1,12 @@
 package com.kakaopay.controller;
 
 import com.kakaopay.dto.request.MunicipalityInfoRequest;
-import com.kakaopay.dto.response.RegionInfoResponse;
 import com.kakaopay.dto.response.MunicipalityInfoResponse;
+import com.kakaopay.dto.response.RegionInfoResponse;
+import com.kakaopay.repository.MunicipalityRepository;
 import com.kakaopay.service.MunicipalityService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,23 +40,26 @@ public class MunicipalityControllerTest {
     @Autowired
     private MunicipalityService municipalityService;
 
-    private static boolean initilize = false;
+    @Autowired
+    private MunicipalityRepository municipalityRepository;
 
     @Before
     public void setUp() throws Exception {
-        if (!initilize) {
-            String filePath = "src/test/resources/test_data.csv";
-            FileInputStream fileInputStream = new FileInputStream(filePath);
-            MultipartFile multipartFile = new MockMultipartFile("test_data.csv", fileInputStream);
-            municipalityService.insertRows(multipartFile);
-        }
-        initilize = true;
+        String filePath = "src/test/resources/test_data.csv";
+        FileInputStream fileInputStream = new FileInputStream(filePath);
+        MultipartFile multipartFile = new MockMultipartFile("test_data.csv", fileInputStream);
+        municipalityService.insertRows(multipartFile);
+    }
+
+    @After
+    public void clean() {
+        municipalityRepository.deleteAll();
     }
 
     @Test
     public void getMunicipalityInfoTest() {
-        MunicipalityInfoResponse expectedResponse = new MunicipalityInfoResponse("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "3%", "강릉시", "강릉지점", "강릉시 소재 영업점");
-        ResponseEntity<MunicipalityInfoResponse> response = testRestTemplate.getForEntity("/api/municipality/강릉시", MunicipalityInfoResponse.class);
+        MunicipalityInfoResponse expectedResponse = new MunicipalityInfoResponse("김해시", "김해시 소재 중소기업(소상공인 포함)으로서 김해시장이 추천한 자", "운전 및 시설", "3억원 이내", "2.0%~2.5%", "김해시, 경남신용보증재단 김해지점", "김해지점", "전 영업점");
+        ResponseEntity<MunicipalityInfoResponse> response = testRestTemplate.getForEntity("/api/municipality/김해시", MunicipalityInfoResponse.class);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -101,8 +106,16 @@ public class MunicipalityControllerTest {
         MunicipalityInfoRequest modifyRequest = new MunicipalityInfoRequest("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "4%", "강릉시", "강릉지점", "강릉시 소재 영업점");
         MunicipalityInfoResponse modifiedExpectedResponse = new MunicipalityInfoResponse("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "4%", "강릉시", "강릉지점", "강릉시 소재 영업점");
 
-        testRestTemplate.put("/api/municipality/강릉시", modifyRequest);
-        ResponseEntity<MunicipalityInfoResponse> modifiedResponse = testRestTemplate.getForEntity("/api/municipality/강릉시", MunicipalityInfoResponse.class);
+
+        HttpHeaders headers = new HttpHeaders();
+
+        HttpEntity<MunicipalityInfoRequest> modifyEntity = new HttpEntity(modifyRequest, headers);
+        ResponseEntity<MunicipalityInfoResponse> modifiedResponse = testRestTemplate.exchange(
+                "/api/municipality/강릉시",
+                HttpMethod.PUT,
+                modifyEntity,
+                new ParameterizedTypeReference<MunicipalityInfoResponse>() {
+                });
 
         assertThat(modifiedResponse).isNotNull();
         assertThat(modifiedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
