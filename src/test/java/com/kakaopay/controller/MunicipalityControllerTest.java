@@ -53,10 +53,19 @@ public class MunicipalityControllerTest {
 
     @Test
     public void getMunicipalityInfoTest() {
+        MunicipalityInfoResponse expectedResponse = new MunicipalityInfoResponse("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "3%", "강릉시", "강릉지점", "강릉시 소재 영업점");
         ResponseEntity<MunicipalityInfoResponse> response = testRestTemplate.getForEntity("/api/municipality/강릉시", MunicipalityInfoResponse.class);
+
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-//        assertThat(region.getBody().get
+        assertThat(response.getBody().getRegion()).isEqualTo(expectedResponse.getRegion());
+        assertThat(response.getBody().getTarget()).isEqualTo(expectedResponse.getTarget());
+        assertThat(response.getBody().getUsage()).isEqualTo(expectedResponse.getUsage());
+        assertThat(response.getBody().getLimit()).isEqualTo(expectedResponse.getLimit());
+        assertThat(response.getBody().getRate()).isEqualTo(expectedResponse.getRate());
+        assertThat(response.getBody().getInstitute()).isEqualTo(expectedResponse.getInstitute());
+        assertThat(response.getBody().getMgmt()).isEqualTo(expectedResponse.getMgmt());
+        assertThat(response.getBody().getReception()).isEqualTo(expectedResponse.getReception());
     }
 
     @Test
@@ -74,27 +83,41 @@ public class MunicipalityControllerTest {
     }
 
     @Test
-    public void updateMunicipality() {
-        MunicipalityInfoRequest modifyRequest = new MunicipalityInfoRequest("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "3%", "강릉시", "강릉지점", "강릉시 소재 영업점");
-        MunicipalityInfoResponse modifiedRespose = new MunicipalityInfoResponse("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "4%", "강릉시", "강릉지점", "강릉시 소재 영업점");
+    public void updateMunicipalityTest() {
+        MunicipalityInfoResponse originExpectedResponse = new MunicipalityInfoResponse("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "3%", "강릉시", "강릉지점", "강릉시 소재 영업점");
+        ResponseEntity<MunicipalityInfoResponse> originResponse = testRestTemplate.getForEntity("/api/municipality/강릉시", MunicipalityInfoResponse.class);
 
-        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType();
+        assertThat(originResponse).isNotNull();
+        assertThat(originResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(originResponse.getBody().getRegion()).isEqualTo(originExpectedResponse.getRegion());
+        assertThat(originResponse.getBody().getTarget()).isEqualTo(originExpectedResponse.getTarget());
+        assertThat(originResponse.getBody().getUsage()).isEqualTo(originExpectedResponse.getUsage());
+        assertThat(originResponse.getBody().getLimit()).isEqualTo(originExpectedResponse.getLimit());
+        assertThat(originResponse.getBody().getRate()).isEqualTo(originExpectedResponse.getRate());
+        assertThat(originResponse.getBody().getInstitute()).isEqualTo(originExpectedResponse.getInstitute());
+        assertThat(originResponse.getBody().getMgmt()).isEqualTo(originExpectedResponse.getMgmt());
+        assertThat(originResponse.getBody().getReception()).isEqualTo(originExpectedResponse.getReception());
 
-        HttpEntity<MunicipalityInfoRequest> testRequest = new HttpEntity(modifyRequest, headers);
-        ResponseEntity<MunicipalityInfoResponse> region = testRestTemplate.exchange(
-                "/api/municipality/제주시",
-                HttpMethod.PUT,
-                testRequest,
-                new ParameterizedTypeReference<MunicipalityInfoResponse>() {
-                });
+        MunicipalityInfoRequest modifyRequest = new MunicipalityInfoRequest("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "4%", "강릉시", "강릉지점", "강릉시 소재 영업점");
+        MunicipalityInfoResponse modifiedExpectedResponse = new MunicipalityInfoResponse("강릉시", "강릉시 소재 중소기업으로서 강릉시장이 추천한 자", "운전", "추천금액 이내", "4%", "강릉시", "강릉지점", "강릉시 소재 영업점");
 
-        assertThat(region).isNotNull();
-        assertThat(region.getStatusCode()).isEqualTo(HttpStatus.OK);
+        testRestTemplate.put("/api/municipality/강릉시", modifyRequest);
+        ResponseEntity<MunicipalityInfoResponse> modifiedResponse = testRestTemplate.getForEntity("/api/municipality/강릉시", MunicipalityInfoResponse.class);
+
+        assertThat(modifiedResponse).isNotNull();
+        assertThat(modifiedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(modifiedResponse.getBody().getRegion()).isEqualTo(modifiedExpectedResponse.getRegion());
+        assertThat(modifiedResponse.getBody().getTarget()).isEqualTo(modifiedExpectedResponse.getTarget());
+        assertThat(modifiedResponse.getBody().getUsage()).isEqualTo(modifiedExpectedResponse.getUsage());
+        assertThat(modifiedResponse.getBody().getLimit()).isEqualTo(modifiedExpectedResponse.getLimit());
+        assertThat(modifiedResponse.getBody().getRate()).isEqualTo(modifiedExpectedResponse.getRate());
+        assertThat(modifiedResponse.getBody().getInstitute()).isEqualTo(modifiedExpectedResponse.getInstitute());
+        assertThat(modifiedResponse.getBody().getMgmt()).isEqualTo(modifiedExpectedResponse.getMgmt());
+        assertThat(modifiedResponse.getBody().getReception()).isEqualTo(modifiedExpectedResponse.getReception());
     }
 
     @Test
-    public void orderByRateDesc() {
+    public void orderByRateDescTest() {
         ResponseEntity<RegionInfoResponse> region = testRestTemplate.getForEntity("/api/municipality/sort/5", RegionInfoResponse.class);
 
         assertThat(region).isNotNull();
@@ -102,9 +125,8 @@ public class MunicipalityControllerTest {
         assertThat(region.getBody().getRegion()).isEqualTo("경기도, 제주도, 국토교통부, 인천광역시, 안양시");
     }
 
-
     @Test
-    public void recommendMunicipality() {
+    public void recommendMunicipalityTest() {
         ResponseEntity<RegionInfoResponse> response = testRestTemplate.getForEntity("/api/municipality/recommend", RegionInfoResponse.class);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

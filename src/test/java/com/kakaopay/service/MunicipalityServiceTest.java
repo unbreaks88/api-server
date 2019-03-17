@@ -70,32 +70,32 @@ public class MunicipalityServiceTest {
 
     @Test
     public void updateMunicipalityInfoTest() {
-        MunicipalityInfoResponse response = municipalityService.findByRegion("경주시");
-        MunicipalityInfoResponse expectedResult = new MunicipalityInfoResponse("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내", "3.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점");
+        MunicipalityInfoResponse originResponse = municipalityService.findByRegion("경주시");
+        MunicipalityInfoResponse originExpectedResponse = new MunicipalityInfoResponse("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내", "3.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점");
 
-        assertThat(response).isNotNull();
-        assertThat(response.getRegion()).isEqualTo(expectedResult.getRegion());
-        assertThat(response.getTarget()).isEqualTo(expectedResult.getTarget());
-        assertThat(response.getUsage()).isEqualTo(expectedResult.getUsage());
-        assertThat(response.getLimit()).isEqualTo(expectedResult.getLimit());
-        assertThat(response.getRate()).isEqualTo(expectedResult.getRate());
-        assertThat(response.getInstitute()).isEqualTo(expectedResult.getInstitute());
-        assertThat(response.getMgmt()).isEqualTo(expectedResult.getMgmt());
-        assertThat(response.getReception()).isEqualTo(expectedResult.getReception());
+        assertThat(originResponse).isNotNull();
+        assertThat(originResponse.getRegion()).isEqualTo(originExpectedResponse.getRegion());
+        assertThat(originResponse.getTarget()).isEqualTo(originExpectedResponse.getTarget());
+        assertThat(originResponse.getUsage()).isEqualTo(originExpectedResponse.getUsage());
+        assertThat(originResponse.getLimit()).isEqualTo(originExpectedResponse.getLimit());
+        assertThat(originResponse.getRate()).isEqualTo(originExpectedResponse.getRate());
+        assertThat(originResponse.getInstitute()).isEqualTo(originExpectedResponse.getInstitute());
+        assertThat(originResponse.getMgmt()).isEqualTo(originExpectedResponse.getMgmt());
+        assertThat(originResponse.getReception()).isEqualTo(originExpectedResponse.getReception());
 
         MunicipalityInfoRequest updateRequest = new MunicipalityInfoRequest("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내", "5.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점");
         MunicipalityInfoResponse updatedResponse = municipalityService.updateMunicipalityInfo("경주시", updateRequest);
-        MunicipalityInfoResponse updatedExpectedResult = new MunicipalityInfoResponse("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내", "5.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점");
+        MunicipalityInfoResponse updatedExpectedResponse = new MunicipalityInfoResponse("경주시", "경주시 소재 중소기업으로서 경주시장이 추천한 자", "운전", "5억원 이내", "5.00%", "경주시", "대구경북동부지역본부", "경주시 소재 영업점");
 
         assertThat(updatedResponse).isNotNull();
-        assertThat(updatedResponse.getRegion()).isEqualTo(updatedExpectedResult.getRegion());
-        assertThat(updatedResponse.getTarget()).isEqualTo(updatedExpectedResult.getTarget());
-        assertThat(updatedResponse.getUsage()).isEqualTo(updatedExpectedResult.getUsage());
-        assertThat(updatedResponse.getLimit()).isEqualTo(updatedExpectedResult.getLimit());
-        assertThat(updatedResponse.getRate()).isEqualTo(updatedExpectedResult.getRate());
-        assertThat(updatedResponse.getInstitute()).isEqualTo(updatedExpectedResult.getInstitute());
-        assertThat(updatedResponse.getMgmt()).isEqualTo(updatedExpectedResult.getMgmt());
-        assertThat(updatedResponse.getReception()).isEqualTo(updatedExpectedResult.getReception());
+        assertThat(updatedResponse.getRegion()).isEqualTo(updatedExpectedResponse.getRegion());
+        assertThat(updatedResponse.getTarget()).isEqualTo(updatedExpectedResponse.getTarget());
+        assertThat(updatedResponse.getUsage()).isEqualTo(updatedExpectedResponse.getUsage());
+        assertThat(updatedResponse.getLimit()).isEqualTo(updatedExpectedResponse.getLimit());
+        assertThat(updatedResponse.getRate()).isEqualTo(updatedExpectedResponse.getRate());
+        assertThat(updatedResponse.getInstitute()).isEqualTo(updatedExpectedResponse.getInstitute());
+        assertThat(updatedResponse.getMgmt()).isEqualTo(updatedExpectedResponse.getMgmt());
+        assertThat(updatedResponse.getReception()).isEqualTo(updatedExpectedResponse.getReception());
     }
 
     @Test
