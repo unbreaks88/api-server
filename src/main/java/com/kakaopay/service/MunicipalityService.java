@@ -10,6 +10,7 @@ import com.kakaopay.repository.MunicipalityRepository;
 import com.kakaopay.repository.SupportMunicipalityRepository;
 import com.kakaopay.util.Utils;
 import com.kakaopay.vo.RecommendMunicipality;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -71,7 +72,6 @@ public class MunicipalityService {
 
     public MunicipalityInfoResponse findByRegion(final String region) {
         SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
-//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
         if (supportEntity != null) {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
             return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
@@ -82,7 +82,6 @@ public class MunicipalityService {
 
     public MunicipalityInfoResponse updateMunicipalityInfo(final String region, MunicipalityInfoRequest updateRequest) {
         SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
-//        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region);
         if (supportEntity != null) {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
 
@@ -125,7 +124,7 @@ public class MunicipalityService {
     }
 
     public RegionInfoResponse getMinRateRegion() {
-        Map<String, Double> regionMinRateMap = new LinkedHashMap<>();
+        Map<String, Pair<String, Double>> regionMinRateMap = new LinkedHashMap<>();
 
         /*
          * 정렬을 위한 데이터 셋팅
@@ -133,15 +132,18 @@ public class MunicipalityService {
          * region : 이차보전
          */
         for (MunicipalityInfoEntity entity : municipalityRepository.findAll()) {
+            String institute = entity.getInstitute();
             double minRate = Utils.convertRateStringToDouble(entity.getRate())[0];
-            regionMinRateMap.put(entity.getSupportInfoEntity().getRegion(), minRate);
+            regionMinRateMap.put(entity.getSupportInfoEntity().getRegion(), new Pair<>(institute, minRate));
         }
 
-        // 이차보전 기준 정렬
-        String region = regionMinRateMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder()))
-                .findFirst().get().getKey();
+        Comparator<Pair<String, Double>> comparator = (x, y) -> x.getValue().compareTo(y.getValue());
 
-        return new RegionInfoResponse(region);
+        // 이차보전 기준 정렬
+        String recommendInstitute = regionMinRateMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(comparator))
+                .findFirst().get().getValue().getKey();
+
+        return new RegionInfoResponse(recommendInstitute);
     }
 }

@@ -1,7 +1,12 @@
 package com.kakaopay.util;
 
+import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.util.LinkedCaseInsensitiveMap;
+
+import java.util.Comparator;
+import java.util.Map;
 
 public class UtilsTest {
 
@@ -53,5 +58,25 @@ public class UtilsTest {
         Assert.assertEquals(400000000L, test5);
         Assert.assertEquals(200000000L, test6);
         Assert.assertEquals(30000000L, test7);
+    }
+
+    @Test
+    public void sortedByValueNaturalOrderTest() {
+        Pair<String, Double> pair1 = new Pair<>("카카오페이1", 5.30);
+        Pair<String, Double> pair2 = new Pair<>("카카오페이1", 4.30);
+        Pair<String, Double> pair3 = new Pair<>("카카오페이2", 1.30);
+        Pair<String, Double> pair4 = new Pair<>("카카오페이3", 6.30);
+
+        Map<String, Pair<String, Double>> map = new LinkedCaseInsensitiveMap<>();
+        map.put("1", pair1);
+        map.put("2", pair2);
+        map.put("3", pair3);
+        map.put("4", pair4);
+
+        Comparator<Pair<String, Double>> comparator = (x, y) -> x.getValue().compareTo(y.getValue());
+        String result = map.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(comparator)).findFirst().get().getKey();
+
+        Assert.assertEquals("3", result);
     }
 }
