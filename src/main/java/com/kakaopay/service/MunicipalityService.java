@@ -45,6 +45,7 @@ public class MunicipalityService {
         try {
             CSVParser parser = CSVFormat.DEFAULT.withHeader().parse(new InputStreamReader(file.getInputStream(), "EUC-KR"));
             int i = 0;
+            log.info("file : {}", file.getOriginalFilename());
             for (CSVRecord record : parser.getRecords()) {
                 StringBuilder locationCode = new StringBuilder("LC");
                 locationCode.append(String.valueOf(i++));
@@ -52,8 +53,10 @@ public class MunicipalityService {
                 recordList.add(new MunicipalityInfoEntity(supportInfoEntity, record.get("지원대상"), record.get("용도"), record.get("지원한도"), record.get("이차보전"), record.get("추천기관"), record.get("관리점"), record.get("취급점")));
             }
             municipalityRepository.saveAll(recordList);
+            log.info("saved records : {}", recordList.size());
         } catch (IOException e) {
             msg = e.getCause().getMessage();
+            log.error(msg);
         }
         return new FileInfoResponse(file.getOriginalFilename(), file.getSize(), recordList.size(), msg);
     }
@@ -76,28 +79,35 @@ public class MunicipalityService {
             MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
             return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
         }
-        // FIXME
+        log.error("SupportMunicipalityInfoEntity is null");
+        // FIXME ErrorResponse로 감싸거나, Error message를 담아서 반환할 필요 있음.
         return null;
     }
 
     public MunicipalityInfoResponse updateMunicipalityInfo(MunicipalityInfoRequest updateRequest) {
-        String region = updateRequest.getRegion();
-        SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(region).orElse(null);
-        if (supportEntity != null) {
-            MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
-
-            entity.getSupportInfoEntity().setRegion(updateRequest.getRegion());
-            entity.setTarget(updateRequest.getTarget());
-            entity.setUsage(updateRequest.getUsage());
-            entity.setLimit(updateRequest.getLimit());
-            entity.setRate(updateRequest.getRate());
-            entity.setMgmt(updateRequest.getMgmt());
-            entity.setReception(updateRequest.getReception());
-
-            municipalityRepository.save(entity);
-            return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
+        if (updateRequest.getRegion() != null) {
+            SupportMunicipalityInfoEntity supportEntity = supportMunicipalityRepository.findByRegion(updateRequest.getRegion()).orElse(null);
+            if (supportEntity != null) {
+                MunicipalityInfoEntity entity = municipalityRepository.findBySupportInfoEntity(supportEntity);
+                entity.getSupportInfoEntity().setRegion(updateRequest.getRegion());
+                if (updateRequest.getTarget() != null)
+                    entity.setTarget(updateRequest.getTarget());
+                if (updateRequest.getUsage() != null)
+                    entity.setUsage(updateRequest.getUsage());
+                if (updateRequest.getLimit() != null)
+                    entity.setLimit(updateRequest.getLimit());
+                if (updateRequest.getRate() != null)
+                    entity.setRate(updateRequest.getRate());
+                if (updateRequest.getMgmt() != null)
+                    entity.setMgmt(updateRequest.getMgmt());
+                if (updateRequest.getReception() != null)
+                    entity.setReception(updateRequest.getReception());
+                municipalityRepository.save(entity);
+                return new MunicipalityInfoResponse(entity.getSupportInfoEntity().getRegion(), entity.getTarget(), entity.getUsage(), entity.getLimit(), entity.getRate(), entity.getInstitute(), entity.getMgmt(), entity.getReception());
+            }
         }
-        // FIXME
+        log.error("SupportMunicipalityInfoEntity is null");
+        // FIXME ErrorResponse로 감싸거나, Error message 담아서 반환할 필요 있음.
         return null;
     }
 
@@ -121,6 +131,7 @@ public class MunicipalityService {
                 .limit(count)
                 .collect(Collectors.joining(", "));
 
+        log.info("top {} region are {}", count, sortedRegionList);
         return new RegionInfoResponse(sortedRegionList);
     }
 
@@ -137,7 +148,6 @@ public class MunicipalityService {
             double minRate = Utils.convertRateStringToDouble(entity.getRate())[0];
             regionMinRateMap.put(entity.getSupportInfoEntity().getRegion(), new Pair<>(institute, minRate));
         }
-
         Comparator<Pair<String, Double>> comparator = (x, y) -> x.getValue().compareTo(y.getValue());
 
         // 이차보전 기준 정렬
@@ -145,6 +155,7 @@ public class MunicipalityService {
                 .sorted(Map.Entry.comparingByValue(comparator))
                 .findFirst().get().getValue().getKey();
 
+        log.info("Recommend : {}", recommendInstitute);
         return new RegionInfoResponse(recommendInstitute);
     }
 }

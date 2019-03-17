@@ -1,19 +1,29 @@
 ## 빌드 및 실행 방법
 
 ```bash
-# 실행 방법
+#빌드 방법
 cd api-server
-mvn spring-boot:run
+mvn clean package
+
+#실행 방법
+cd api-server
+java -jar target/api-server-0.0.1-SNAPSHOT.jar
+
+or 
+
+mvn clean spring-boot:run
 ```
 
-```bash
-1번 문제
 
-# Request
+
+```bash
+#1번 문제
+
+#Request
 curl --request POST \
    -F file=@"src/main/resources/data.csv" http://localhost:8080/api/municipality/upload
    
-# Response
+#Response
 {
   "name": "data.csv",
   "size": 13600,
@@ -25,14 +35,14 @@ curl --request POST \
 
 
 ```bash
-2번 문제
+#2번 문제
 
-# Request
+#Request
 curl --request POST \
   --url http://localhost:8080/api/municipality/ \
   --header 'content-type: application/json'
 
-# Response
+#Response
 [
   {
     "region": "강릉시",
@@ -51,14 +61,14 @@ curl --request POST \
 
 
 ```bash
-3번 문제
+#3번 문제
 
-# Request
+#Request
 curl --request GET \
   --url http://localhost:8080/api/municipality/%EA%B0%95%EC%9B%90%EB%8F%84 \
   --header 'content-type: application/json'
   
-# Response
+#Response
 {
   "region": "강원도",
   "target": "강원도 소재 중소기업으로서 강원도지사가 추천한 자",
@@ -75,9 +85,9 @@ curl --request GET \
 
 
 ```bash
-4번 문제
+#4번 문제
 
-# Request
+#Request
 curl --request PUT \
   --url http://localhost:8080/api/municipality \
   --header 'content-type: application/json' \
@@ -92,7 +102,7 @@ curl --request PUT \
     "reception": "강원도 소재 영업점"
 }'
 
-# Response
+#Response
 {
   "region": "강원도",
   "target": "강원도 소재 중소기업으로서 강원도지사가 추천한 자",
@@ -108,13 +118,13 @@ curl --request PUT \
 
 
 ```bash
-5번 문제
+#5번 문제
 
-# Request
+#Request
 curl --request GET \
   --url http://localhost:8080/api/municipality/sort/5
   
-# Response
+#Response
 {
   "region": "경기도, 제주도, 국토교통부, 인천광역시, 안양시"
 }
@@ -123,13 +133,13 @@ curl --request GET \
 
 
 ```bash
-6번 문제
+#6번 문제
 
-# Request
+#Request
 curl --request GET \
   --url http://localhost:8080/api/municipality/recommend
 
-# Response
+#Response
 {
   "region": "안산시"
 }

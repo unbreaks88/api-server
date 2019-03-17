@@ -63,9 +63,9 @@ public class MunicipalityController {
         return municipalityService.getMinRateRegion();
     }
 
-    // TODO 선택 문제
-    @PostMapping("/municipality/recommend")
-    public RegionInfoResponse recommendMunicipalityInfo() {
-        return new RegionInfoResponse();
-    }
+//     TODO 선택 문제
+//    @PostMapping("/municipality/recommend")
+//    public RegionInfoResponse recommendMunicipalityInfo() {
+//        return new RegionInfoResponse();
+//    }
 }
