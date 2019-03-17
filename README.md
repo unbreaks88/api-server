@@ -1,3 +1,15 @@
+## 개발 프레임워크
+
+- Java 1.8
+- Maven
+- spring-boot 2.1.3 RELEASE
+- spring-boot-starter-data-jpa
+- spring-boot-starter-web
+- lombok
+- h2-database
+
+
+
 ## 빌드 및 실행 방법
 
 ```bash
@@ -145,17 +157,6 @@ curl --request GET \
 }
 
 ```
-
-
-
-## 개발 프레임워크
-
-- Java 1.8
-- spring-boot 2.1.3 RELEASE
-- spring-boot-starter-data-jpa
-- spring-boot-starter-web
-- lombok
-- h2-database
 
 
 
